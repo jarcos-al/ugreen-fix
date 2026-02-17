@@ -6,4 +6,4 @@ Instala una web (host Proxmox) con botones para:
 
 ## Instalación
 ```bash
-curl -fsSL https://raw.githubusercontent.com/TU_USUARIO/ugreen-fix/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/jarcos-al/ugreen-fix/main/install.sh | bash
