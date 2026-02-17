@@ -1,0 +1,5 @@
+# UGREEN HDMI Capture - video
+SUBSYSTEM=="video4linux", ATTRS{idVendor}=="345f", ATTRS{idProduct}=="2131", SYMLINK+="video-ugreen"
+
+# (opcional) si expone un segundo nodo de video, deja esto también:
+# SUBSYSTEM=="video4linux", ATTRS{idVendor}=="345f", ATTRS{idProduct}=="2131", SYMLINK+="video-ugreen2"
