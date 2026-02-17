@@ -1,0 +1,16 @@
+[Unit]
+Description=UGREEN Web Fix Button
+After=network.target
+
+[Service]
+Type=simple
+Environment=UGREEN_CT_ID=402
+# Environment=UGREEN_WEB_TOKEN=pon-un-token-largo
+Environment=UGREEN_WEB_PORT=8088
+Environment=UGREEN_CT_RESTART_MODE=reboot
+ExecStart=/usr/local/sbin/ugreen-web.py
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
