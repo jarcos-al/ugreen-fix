@@ -1,18 +1,24 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_RAW_BASE="${REPO_RAW_BASE:-}"
+# --- Defaults (repo actual) ---
+GITHUB_USER_DEFAULT="jarcos-al"
+GITHUB_REPO_DEFAULT="ugreen-fix"
+GITHUB_BRANCH_DEFAULT="main"
+
+# Puedes sobreescribir si quieres:
+GITHUB_USER="${GITHUB_USER:-$GITHUB_USER_DEFAULT}"
+GITHUB_REPO="${GITHUB_REPO:-$GITHUB_REPO_DEFAULT}"
+GITHUB_BRANCH="${GITHUB_BRANCH:-$GITHUB_BRANCH_DEFAULT}"
+
+REPO_RAW_BASE="https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}"
+
 CT_ID="${UGREEN_CT_ID:-402}"
 WEB_PORT="${UGREEN_WEB_PORT:-8088}"
 WEB_TOKEN="${UGREEN_WEB_TOKEN:-}"  # opcional
 
-if [[ -z "$REPO_RAW_BASE" ]]; then
-  echo "ERROR: define REPO_RAW_BASE apuntando al raw de GitHub (ver README)." >&2
-  exit 1
-fi
-
 need_root() {
-  if [[ $EUID -ne 0 ]]; then
+  if [[ ${EUID:-0} -ne 0 ]]; then
     echo "Ejecuta como root." >&2
     exit 1
   fi
@@ -22,7 +28,7 @@ fetch() {
   local url="$1" dest="$2"
   echo ">> Descargando $url"
   curl -fsSL "$url" -o "$dest"
-  chmod +x "$dest" || true
+  chmod +x "$dest" 2>/dev/null || true
 }
 
 install_udev() {
@@ -42,7 +48,6 @@ install_service() {
   echo ">> Instalando systemd service"
   curl -fsSL "$REPO_RAW_BASE/files/ugreen-web.service" -o /etc/systemd/system/ugreen-web.service
 
-  # Inserta env vars (sin depender de editar a mano)
   mkdir -p /etc/systemd/system/ugreen-web.service.d
   cat > /etc/systemd/system/ugreen-web.service.d/override.conf <<EOF
 [Service]
@@ -60,6 +65,13 @@ EOF
 
 main() {
   need_root
+
+  echo "== UGREEN FIX INSTALLER =="
+  echo "Repo: $REPO_RAW_BASE"
+  echo "CT:   $CT_ID"
+  echo "Port: $WEB_PORT"
+  [[ -n "$WEB_TOKEN" ]] && echo "Token: (configurado)" || echo "Token: (no)"
+
   install_udev
   install_scripts
   install_service
@@ -74,3 +86,4 @@ main() {
 }
 
 main
+
